@@ -1,3 +1,35 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* ==================== RECEPTIONIST DASHBOARD STYLES ==================== */
 /* Professional hospital management system styling with medical theme */
 
@@ -28,15 +60,23 @@
   --gray-800: #1e293b;
   --gray-900: #0f172a;
   
+  /* Gradient colors */
+  --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --gradient-2: linear-gradient(135deg, #1976d2 0%, #42a5f5 100%);
+  --gradient-3: linear-gradient(135deg, #2e7d32 0%, #4caf50 100%);
+  --gradient-4: linear-gradient(135deg, #ff6b6b 0%, #ee5253 100%);
+  
   /* Shadows */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
   --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
   --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  --shadow-glow: 0 0 20px rgba(102, 126, 234, 0.5);
   
   /* Transitions */
   --transition: all 0.3s ease;
   --transition-fast: all 0.15s ease;
+  --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
 /* Hide number input spinners */
@@ -55,13 +95,13 @@ input[type="number"] {
   display: flex;
   min-height: 100vh;
   background: var(--gray-100);
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
 }
 
 /* ==================== SIDEBAR ==================== */
 .sidebar {
-  width: 260px;
-  background: linear-gradient(180deg, var(--primary) 0%, #061220 100%);
+  width: 280px;
+  background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
   color: var(--white);
   padding: 0;
   display: flex;
@@ -69,15 +109,26 @@ input[type="number"] {
   position: fixed;
   height: 100vh;
   z-index: 100;
-  box-shadow: var(--shadow-lg);
+  box-shadow: 10px 0 30px rgba(0, 0, 0, 0.2);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Modern glass morphism effect */
+.sidebar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 0% 0%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+  pointer-events: none;
 }
 
 .sidebar-header {
-  padding: 24px 20px;
+  padding: 30px 25px 25px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  display: flex;
-  align-items: center;
-  gap: 12px;
+  margin-bottom: 10px;
 }
 
 .logo-container {
@@ -87,63 +138,80 @@ input[type="number"] {
 }
 
 .hospital-logo {
-  font-size: 40px;
+  font-size: 42px;
   background: rgba(255, 255, 255, 0.1);
-  width: 60px;
-  height: 60px;
+  width: 65px;
+  height: 65px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 15px;
+  border-radius: 18px;
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  transition: var(--transition-bounce);
+}
+
+.hospital-logo:hover {
+  transform: rotate(5deg) scale(1.05);
+  border-color: rgba(255, 255, 255, 0.4);
+  box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);
+}
+
+.header-text {
+  flex: 1;
 }
 
 .header-text h2 {
   margin: 0 0 5px 0;
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 20px;
+  font-weight: 700;
   letter-spacing: 0.5px;
-  background: linear-gradient(135deg, #fff 0%, #b8d4f0 100%);
+  background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  line-height: 1.2;
 }
 
 .user-role {
   margin: 0;
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.7);
-  letter-spacing: 0.5px;
-  font-weight: 500;
+  color: rgba(255, 255, 255, 0.6);
+  letter-spacing: 1px;
+  font-weight: 600;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.1);
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .sidebar-nav {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 20px 0;
+  padding: 15px 0 20px;
   overflow-y: auto;
 }
 
-/* Hide scrollbar but keep functionality */
+/* Custom scrollbar */
 .sidebar-nav::-webkit-scrollbar {
   width: 5px;
 }
 
 .sidebar-nav::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .sidebar-nav::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 10px;
 }
 
 .sidebar-nav::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #764ba2 0%, #667eea 100%);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 /* Menu Section */
@@ -153,180 +221,166 @@ input[type="number"] {
 
 .menu-section-label {
   display: block;
-  padding: 20px 20px 10px;
-  margin: 0 12px 10px;
-  font-size: 12px;
+  padding: 20px 25px 10px;
+  font-size: 11px;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.4);
   letter-spacing: 1.5px;
   text-transform: uppercase;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* ==================== SIDEBAR BUTTON STYLES ==================== */
-/* Professional & Beautiful Button Design - Only for sidebar links */
+/* Premium button design with consistent sizing */
 
-/* Base styles for all nav links in sidebar */
 .sidebar-menu {
   list-style: none;
-  padding: 0;
+  padding: 0 15px;
   margin: 0;
 }
 
 .sidebar-menu li {
-  margin: 4px 0;
+  margin: 6px 0;
   list-style: none;
-  animation: slideInLeft 0.3s ease forwards;
+  animation: slideInRight 0.4s ease forwards;
   opacity: 0;
+  transform: translateX(-20px);
 }
 
-.sidebar-menu li:nth-child(1) { animation-delay: 0.1s; }
-.sidebar-menu li:nth-child(2) { animation-delay: 0.15s; }
-.sidebar-menu li:nth-child(3) { animation-delay: 0.2s; }
-.sidebar-menu li:nth-child(4) { animation-delay: 0.25s; }
-.sidebar-menu li:nth-child(5) { animation-delay: 0.3s; }
-.sidebar-menu li:nth-child(6) { animation-delay: 0.35s; }
-.sidebar-menu li:nth-child(7) { animation-delay: 0.4s; }
+.sidebar-menu li:nth-child(1) { animation-delay: 0.05s; }
+.sidebar-menu li:nth-child(2) { animation-delay: 0.1s; }
+.sidebar-menu li:nth-child(3) { animation-delay: 0.15s; }
+.sidebar-menu li:nth-child(4) { animation-delay: 0.2s; }
+.sidebar-menu li:nth-child(5) { animation-delay: 0.25s; }
+.sidebar-menu li:nth-child(6) { animation-delay: 0.3s; }
+.sidebar-menu li:nth-child(7) { animation-delay: 0.35s; }
 
+@keyframes slideInRight {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Base button styles - ALL BUTTONS SAME HEIGHT */
 .sidebar-menu li a {
   display: flex;
   align-items: center;
   padding: 14px 20px;
-  margin: 6px 12px;
   color: rgba(255, 255, 255, 0.8);
   text-decoration: none;
   border-radius: 14px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s ease;
   position: relative;
-  overflow: hidden;
   font-weight: 500;
+  font-size: 15px;
   letter-spacing: 0.3px;
   border: 1px solid transparent;
+  background: transparent;
+  min-height: 52px; /* Consistent height */
+  box-sizing: border-box;
+  width: 100%;
   backdrop-filter: blur(5px);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* Glass morphism effect on hover */
+/* Hover effect with glass morphism */
 .sidebar-menu li a:hover {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
   color: white;
-  transform: translateX(8px) scale(1.02);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(10px);
+  transform: translateX(5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
-/* Active button - Beautiful gradient */
+/* Active state - Premium gradient with glow */
 .sidebar-menu li a.active {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--gradient-1);
   color: white;
   border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 10px 25px -5px rgba(102, 126, 234, 0.5);
-  transform: translateX(4px);
+  box-shadow: 0 10px 25px -5px rgba(102, 126, 234, 0.6), 0 0 0 2px rgba(255, 255, 255, 0.1);
+  transform: scale(1.02);
 }
 
-/* Active indicator */
+/* Active indicator line */
 .sidebar-menu li a.active::before {
   content: '';
   position: absolute;
-  left: 0;
+  left: -15px;
   top: 50%;
   transform: translateY(-50%);
-  width: 4px;
-  height: 70%;
-  background: linear-gradient(180deg, #fff 0%, rgba(255, 255, 255, 0.5) 100%);
-  border-radius: 0 4px 4px 0;
+  width: 5px;
+  height: 60%;
+  background: linear-gradient(180deg, #fff, #a5b4fc);
+  border-radius: 0 5px 5px 0;
   box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+  animation: pulseGlow 2s infinite;
 }
 
-/* Pulse animation for active buttons */
-.sidebar-menu li a.active {
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; box-shadow: 0 0 20px rgba(255, 255, 255, 0.8); }
+}
+
+/* Icon styles - Consistent size and animation */
+.sidebar-menu li a .menu-icon {
+  font-size: 24px;
+  margin-right: 16px;
+  transition: all 0.3s ease;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3));
+  width: 28px; /* Fixed width for alignment */
+  text-align: center;
+  display: inline-block;
+}
+
+/* Icon hover animation */
+.sidebar-menu li a:hover .menu-icon {
+  transform: scale(1.1) rotate(3deg);
+  filter: drop-shadow(0 4px 6px rgba(102, 126, 234, 0.5));
+}
+
+/* Active icon style */
+.sidebar-menu li a.active .menu-icon {
+  transform: scale(1.1);
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
+  animation: bounceIcon 2s infinite;
+}
+
+@keyframes bounceIcon {
+  0%, 100% { transform: scale(1.1) translateY(0); }
+  50% { transform: scale(1.15) translateY(-2px); }
+}
+
+/* Menu label - Truncate long text */
+.menu-label {
+  font-size: 15px;
+  font-weight: 500;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: all 0.3s ease;
+}
+
+/* Optional badge for notifications */
+.menu-badge {
+  background: var(--gradient-4);
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 20px;
+  margin-left: 8px;
+  box-shadow: 0 2px 5px rgba(238, 82, 83, 0.4);
   animation: pulse 2s infinite;
 }
 
 @keyframes pulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.7);
-  }
-  70% {
-    box-shadow: 0 0 0 10px rgba(102, 126, 234, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(102, 126, 234, 0);
-  }
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
 }
 
-/* Icon animation */
-.sidebar-menu li a .menu-icon {
-  font-size: 22px;
-  margin-right: 14px;
-  transition: all 0.3s ease;
-  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2));
-  width: 24px;
-  text-align: center;
-}
-
-.sidebar-menu li a:hover .menu-icon {
-  transform: scale(1.1) rotate(5deg);
-}
-
-.sidebar-menu li a.active .menu-icon {
-  transform: scale(1.1);
-  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
-}
-
-/* Ripple effect on click */
-.sidebar-menu li a::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 5px;
-  height: 5px;
-  background: rgba(255, 255, 255, 0.5);
-  opacity: 0;
-  border-radius: 100%;
-  transform: scale(1, 1) translate(-50%);
-  transform-origin: 50% 50%;
-}
-
-.sidebar-menu li a:focus:not(:active)::after {
-  animation: ripple 1s ease-out;
-}
-
-/* Ripple animation */
-@keyframes ripple {
-  0% {
-    transform: scale(0, 0);
-    opacity: 0.5;
-  }
-  20% {
-    transform: scale(25, 25);
-    opacity: 0.3;
-  }
-  100% {
-    opacity: 0;
-    transform: scale(40, 40);
-  }
-}
-
-/* Focus state */
-.sidebar-menu li a:focus-visible {
-  outline: 2px solid white;
-  outline-offset: 2px;
-}
-
-.menu-label {
-  font-size: 14px;
-  font-weight: 500;
-  position: relative;
-  z-index: 1;
-  flex: 1;
-}
-
-/* ==================== LOGOUT BUTTON STYLES ==================== */
+/* ==================== LOGOUT BUTTON ==================== */
 .logout-container {
-  margin: 20px 12px;
+  margin: 20px 15px 25px;
   padding-top: 20px;
   border-top: 2px solid rgba(255, 255, 255, 0.1);
 }
@@ -336,44 +390,45 @@ input[type="number"] {
   align-items: center;
   width: 100%;
   padding: 14px 20px;
-  background: linear-gradient(135deg, #ff6b6b 0%, #ee5253 100%);
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
   border: none;
   border-radius: 14px;
   color: white;
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 4px 15px rgba(238, 82, 83, 0.3);
-  letter-spacing: 0.5px;
+  box-shadow: 0 8px 20px rgba(220, 38, 38, 0.3);
+  min-height: 52px; /* Same height as other buttons */
+  box-sizing: border-box;
 }
 
 /* Logout button hover effect */
 .logout-btn:hover {
-  background: linear-gradient(135deg, #ff8787 0%, #ff6b6b 100%);
-  transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 10px 25px -5px rgba(238, 82, 83, 0.6);
+  background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 12px 25px -5px rgba(220, 38, 38, 0.5);
 }
 
-.logout-btn:active {
-  transform: translateY(-1px);
-}
-
-/* Logout icon animation */
+/* Logout icon */
 .logout-btn .menu-icon {
-  font-size: 22px;
-  margin-right: 14px;
+  font-size: 24px;
+  margin-right: 16px;
   transition: all 0.3s ease;
+  width: 28px;
+  text-align: center;
+  display: inline-block;
 }
 
 .logout-btn:hover .menu-icon {
-  transform: translateX(5px) rotate(10deg);
+  transform: translateX(5px) rotate(5deg);
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
 }
 
-/* Shine effect on logout button */
+/* Shine effect on hover */
 .logout-btn::before {
   content: '';
   position: absolute;
@@ -389,30 +444,46 @@ input[type="number"] {
   left: 100%;
 }
 
-.logout-btn:focus-visible {
-  outline: 2px solid white;
-  outline-offset: 2px;
+/* ==================== TOOLTIP STYLES ==================== */
+/* For collapsed sidebar state */
+.sidebar-menu li a {
+  position: relative;
 }
 
-/* ==================== ANIMATIONS ==================== */
-@keyframes slideInLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+.sidebar-menu li a:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--gray-800);
+  color: white;
+  padding: 8px 15px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  z-index: 1000;
+  margin-left: 15px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  pointer-events: none;
+  opacity: 0;
+  animation: fadeIn 0.2s ease forwards;
+}
+
+@keyframes fadeIn {
+  to { opacity: 1; }
 }
 
 /* ==================== MAIN CONTENT ==================== */
 .main-content {
   flex: 1;
-  margin-left: 260px;
+  margin-left: 280px;
   padding: 30px;
-  background: var(--gray-100);
+  background: linear-gradient(135deg, var(--gray-100) 0%, #ffffff 100%);
   min-height: 100vh;
+  transition: var(--transition);
 }
 
 /* ==================== DASHBOARD HOME STYLES ==================== */
@@ -455,7 +526,6 @@ input[type="number"] {
   padding: 24px;
   border-radius: 16px;
   box-shadow: var(--shadow);
-  padding-bottom: 6px;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -474,7 +544,6 @@ input[type="number"] {
   padding: 16px;
   border-radius: 12px;
   margin-right: 10px;
-  margin-bottom: 15px;
 }
 
 .stat-info h3 {
@@ -485,12 +554,12 @@ input[type="number"] {
 }
 
 .stat-info p {
-  margin: px 0 0 0;
+  margin: 5px 0 0 0;
   color: var(--gray-500);
   font-size: 14px;
 }
 
-/* Quick Actions Section */
+/* Quick Actions Section - PRESERVED */
 .quick-actions-section {
   background: var(--white);
   padding: 24px;
@@ -1176,204 +1245,6 @@ input[type="number"] {
   background: var(--gray-400);
 }
 
-/* ==================== RESPONSIVE STYLES ==================== */
-@media (max-width: 1024px) {
-  .form-row {
-    flex-direction: column;
-    gap: 12px;
-  }
-  
-  .form-row input,
-  .form-row select,
-  .form-row textarea {
-    width: 100%;
-  }
-  
-  .popup-card {
-    max-width: 90%;
-    margin: 20px;
-  }
-  
-  .edit-popup {
-    max-width: 90%;
-  }
-}
-
-@media (max-width: 768px) {
-  .sidebar {
-    width: 80px;
-    transition: width 0.3s ease;
-  }
-
-  .sidebar:hover {
-    width: 280px;
-  }
-
-  .sidebar:hover .menu-label,
-  .sidebar:hover .header-text,
-  .sidebar:hover .menu-section-label {
-    display: block;
-  }
-
-  .hospital-logo {
-    width: 40px;
-    height: 40px;
-    font-size: 24px;
-  }
-
-  .sidebar-menu li a {
-    padding: 12px;
-    margin: 4px 8px;
-    justify-content: center;
-  }
-  
-  .sidebar-menu li a .menu-label {
-    display: none;
-  }
-  
-  .sidebar-menu li a .menu-icon {
-    margin-right: 0;
-    font-size: 24px;
-  }
-
-  .sidebar:hover .sidebar-menu li a {
-    justify-content: flex-start;
-  }
-
-  .sidebar:hover .sidebar-menu li a .menu-icon {
-    margin-right: 14px;
-  }
-
-  .menu-section-label {
-    text-align: center;
-    padding: 15px 10px 5px;
-  }
-  
-  .logout-btn {
-    padding: 12px;
-    justify-content: center;
-  }
-  
-  .logout-btn .menu-label {
-    display: none;
-  }
-  
-  .logout-btn .menu-icon {
-    margin-right: 0;
-  }
-
-  .sidebar:hover .logout-btn {
-    justify-content: flex-start;
-    padding: 14px 20px;
-  }
-
-  .sidebar:hover .logout-btn .menu-label {
-    display: inline;
-  }
-
-  .sidebar:hover .logout-btn .menu-icon {
-    margin-right: 14px;
-  }
-
-  /* Tooltip for mobile */
-  .sidebar-menu li a:hover::after {
-    content: attr(title);
-    position: absolute;
-    left: 100%;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(0, 0, 0, 0.8);
-    color: white;
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-size: 12px;
-    white-space: nowrap;
-    z-index: 1000;
-    margin-left: 10px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    display: block;
-  }
-
-  .sidebar:hover .sidebar-menu li a:hover::after {
-    display: none;
-  }
-  
-  .main-content {
-    margin-left: 80px;
-    padding: 20px;
-  }
-
-  .data-table {
-    display: block;
-    overflow-x: auto;
-    white-space: nowrap;
-  }
-  
-  .page-header {
-    flex-direction: column;
-    gap: 16px;
-    align-items: flex-start;
-  }
-  
-  .page-header h1 {
-    font-size: 24px;
-  }
-  
-  .summary-stats {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  .detail-row {
-    flex-direction: column;
-    gap: 4px;
-  }
-  
-  .detail-label {
-    min-width: auto;
-    font-size: 12px;
-  }
-}
-
-@media (max-width: 480px) {
-  .sidebar {
-    width: 0;
-    display: none;
-  }
-  
-  .main-content {
-    margin-left: 0;
-    padding: 15px;
-  }
-
-  .summary-stats {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-  .sidebar {
-    background: linear-gradient(180deg, #0a0f2e 0%, #05204a 100%);
-  }
-  
-  .main-content {
-    background: #0f172a;
-  }
-}
-
-/* Optional: Add subtle pattern overlay */
-.sidebar::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
-  pointer-events: none;
-}
-
 /* ==================== SYMPTOMS CHECKBOX GRID ==================== */
 .symptoms-checkbox-grid {
   display: grid;
@@ -1585,4 +1456,231 @@ input[type="number"] {
   border-radius: 10px;
   font-size: 14px;
   font-weight: 600;
+}
+
+/* ==================== RESPONSIVE STYLES ==================== */
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 90px;
+    transition: width 0.3s ease;
+  }
+
+  .sidebar:hover {
+    width: 280px;
+    box-shadow: 10px 0 40px rgba(0, 0, 0, 0.3);
+  }
+
+  .main-content {
+    margin-left: 90px;
+  }
+
+  /* Collapsed state styles */
+  .header-text,
+  .menu-section-label,
+  .menu-label {
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+  }
+
+  .sidebar:hover .header-text,
+  .sidebar:hover .menu-section-label,
+  .sidebar:hover .menu-label {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .hospital-logo {
+    width: 50px;
+    height: 50px;
+    font-size: 30px;
+    margin: 0 auto;
+  }
+
+  .sidebar:hover .hospital-logo {
+    width: 65px;
+    height: 65px;
+    font-size: 42px;
+    margin: 0;
+  }
+
+  /* Center icons in collapsed state */
+  .sidebar-menu li a {
+    justify-content: center;
+    padding: 14px;
+  }
+
+  .sidebar-menu li a .menu-icon {
+    margin-right: 0;
+  }
+
+  .sidebar:hover .sidebar-menu li a {
+    justify-content: flex-start;
+    padding: 14px 20px;
+  }
+
+  .sidebar:hover .sidebar-menu li a .menu-icon {
+    margin-right: 16px;
+  }
+
+  /* Logout button in collapsed state */
+  .logout-btn {
+    justify-content: center;
+    padding: 14px;
+  }
+
+  .logout-btn .menu-icon {
+    margin-right: 0;
+  }
+
+  .sidebar:hover .logout-btn {
+    justify-content: flex-start;
+    padding: 14px 20px;
+  }
+
+  .sidebar:hover .logout-btn .menu-icon {
+    margin-right: 16px;
+  }
+
+  /* Show tooltips only in collapsed state */
+  .sidebar:not(:hover) .sidebar-menu li a::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--gray-800);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    z-index: 1000;
+    margin-left: 15px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    pointer-events: none;
+    opacity: 0;
+    animation: fadeIn 0.2s ease forwards;
+  }
+
+  .sidebar:not(:hover) .sidebar-menu li a:hover::after {
+    opacity: 1;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .form-row input,
+  .form-row select,
+  .form-row textarea {
+    width: 100%;
+  }
+  
+  .popup-card {
+    max-width: 90%;
+    margin: 20px;
+  }
+  
+  .edit-popup {
+    max-width: 90%;
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 0;
+    transform: translateX(-100%);
+    position: fixed;
+    transition: all 0.3s ease;
+  }
+
+  .sidebar.open {
+    width: 280px;
+    transform: translateX(0);
+  }
+
+  .main-content {
+    margin-left: 0;
+    padding: 20px;
+  }
+
+  /* Mobile menu toggle button */
+  .menu-toggle {
+    display: block;
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+    background: var(--gradient-1);
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: var(--shadow-md);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .data-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  
+  .page-header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  
+  .page-header h1 {
+    font-size: 24px;
+  }
+  
+  .summary-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .detail-row {
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .detail-label {
+    min-width: auto;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-content {
+    padding: 15px;
+  }
+
+  .summary-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .action-btn {
+    min-width: 100%;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .main-content {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  }
+  
+  .sidebar {
+    background: linear-gradient(180deg, #0a0f2e 0%, #0f172a 100%);
+  }
 }

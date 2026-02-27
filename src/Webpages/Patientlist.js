@@ -1,3 +1,460 @@
+// import React, { useState, useEffect, useMemo } from "react";
+// import { useNavigate } from "react-router-dom";
+// import "./Patientlist.css";
+// import PatientRegistrationForm from "./PatientRegistrationForm";
+
+// function Patientlist() {
+//   const navigate = useNavigate();
+  
+//   const [searchTerm, setSearchTerm] = useState("");
+//   const [stats, setStats] = useState({
+//     total: 0,
+//     male: 0,
+//     female: 0,
+//     other: 0
+//   });
+//   const [showEditPopup, setShowEditPopup] = useState(false);
+//   const [showViewPopup, setShowViewPopup] = useState(false);
+//   const [showRegistrationPopup, setShowRegistrationPopup] = useState(false);
+//   const [selectedPatient, setSelectedPatient] = useState(null);
+//   const [formData, setFormData] = useState({});
+//   const [editErrors, setEditErrors] = useState({});
+//   const [patients, setPatients] = useState([]);
+//   const [loading, setLoading] = useState(true);
+
+//   // Fetch patients from backend
+//   const fetchPatients = async () => {
+//     try {
+//       setLoading(true);
+//       const response = await fetch('http://localhost:8001/api/patients');
+//       const data = await response.json();
+//       if (data.success) {
+//         setPatients(data.data);
+//         setStats(data.stats);
+//       }
+//     } catch (error) {
+//       console.error('Error fetching patients:', error);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   // Fetch statistics
+//   const fetchStats = async () => {
+//     try {
+//       const response = await fetch('http://localhost:8001/api/patients/stats');
+//       const data = await response.json();
+//       if (data.success) {
+//         setStats(data.data);
+//       }
+//     } catch (error) {
+//       console.error('Error fetching stats:', error);
+//     }
+//   };
+
+//   useEffect(() => {
+//     fetchPatients();
+//     fetchStats();
+//   }, []);
+
+//   /* =======================
+//      IMPROVED FILTER - SEARCH IN ALL FIELDS
+//   ========================*/
+//   const filteredPatients = useMemo(() => {
+//     if (!patients) return [];
+
+//     if (!searchTerm.trim()) return patients;
+
+//     const searchLower = searchTerm.toLowerCase().trim();
+
+//     return patients.filter((patient) => {
+//       const matches = (field) => {
+//         if (field === undefined || field === null) return false;
+//         return String(field).toLowerCase().includes(searchLower);
+//       };
+
+//       const symptomsMatch = patient.symptoms && 
+//         (Array.isArray(patient.symptoms) 
+//           ? patient.symptoms.some(symptom => symptom.toLowerCase().includes(searchLower))
+//           : String(patient.symptoms).toLowerCase().includes(searchLower));
+
+//       return (
+//         matches(patient.patientName) ||
+//         matches(patient.age) ||
+//         matches(patient.gender) ||
+//         matches(patient.dob) ||
+//         matches(patient.email) ||
+//         matches(patient.phone) ||
+//         matches(patient.alternatePhone) ||
+//         matches(patient.address) ||
+//         matches(patient.bloodGroup) ||
+//         matches(patient.profession) ||
+//         matches(patient.nameOfKin) ||
+//         matches(patient.kinContact) ||
+//         matches(patient.registeredDate) ||
+//         matches(patient.registeredTime) ||
+//         matches(patient.status) ||
+//         matches(patient.id) ||
+//         symptomsMatch
+//       );
+//     });
+//   }, [patients, searchTerm]);
+
+//   /* =======================
+//      VALIDATION FUNCTIONS
+//   ========================*/
+//   const validatePhone = (phone) => {
+//     if (!phone) return false;
+//     const cleaned = phone.replace(/\D/g, '');
+//     return cleaned.length === 10 && ['7', '8', '9'].includes(cleaned[0]);
+//   };
+
+//   const validateAge = (age) => {
+//     if (!age && age !== 0) return false;
+//     const ageNum = parseInt(age);
+//     return !isNaN(ageNum) && ageNum > 0 && ageNum <= 120;
+//   };
+
+//   const validateName = (name) => {
+//     if (!name) return false;
+//     const trimmed = name.trim();
+//     return trimmed.length >= 2 && trimmed.length <= 50 && /^[a-zA-Z\s]+$/.test(trimmed);
+//   };
+
+//   const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+//   const validateEditForm = () => {
+//     const newErrors = {};
+    
+//     if (!validateName(formData.patientName)) 
+//       newErrors.patientName = "Patient name must be 2-50 characters and contain only letters";
+    
+//     if (!validateAge(formData.age)) 
+//       newErrors.age = "Age must be between 1-120 years";
+    
+//     if (!formData.gender) 
+//       newErrors.gender = "Please select gender";
+    
+//     if (!validatePhone(formData.phone)) 
+//       newErrors.phone = "Enter valid 10-digit number starting with 7,8,9";
+    
+//     if (formData.alternatePhone && !validatePhone(formData.alternatePhone))
+//       newErrors.alternatePhone = "Enter valid 10-digit number starting with 7,8,9";
+    
+//     if (!validateEmail(formData.email)) 
+//       newErrors.email = "Enter valid email address";
+    
+//     if (formData.kinContact && !validatePhone(formData.kinContact)) 
+//       newErrors.kinContact = "Enter valid 10-digit emergency contact number";
+    
+//     setEditErrors(newErrors);
+//     return Object.keys(newErrors).length === 0;
+//   };
+
+//   /* =======================
+//      HANDLERS
+//   ========================*/
+//   const handleView = (patient) => {
+//     setSelectedPatient(patient);
+//     setShowViewPopup(true);
+//   };
+
+//   const handleEdit = (patient) => {
+//     setSelectedPatient(patient);
+//     setFormData({ ...patient });
+//     setEditErrors({});
+//     setShowEditPopup(true);
+//   };
+
+//   const handleEditChange = (e) => {
+//     const { name, value } = e.target;
+    
+//     if (name === "phone" || name === "alternatePhone" || name === "kinContact") {
+//       const cleaned = value.replace(/\D/g, '');
+//       if (cleaned.length <= 10) {
+//         setFormData(prev => ({ ...prev, [name]: cleaned }));
+//       }
+//     } 
+//     else if (name === "age") {
+//       if (value === "" || /^\d+$/.test(value)) {
+//         const ageNum = parseInt(value);
+//         if (value === "" || (ageNum >= 0 && ageNum <= 120)) {
+//           setFormData(prev => ({ ...prev, [name]: value }));
+//         }
+//       }
+//     } 
+//     else if (name === "patientName") {
+//       if (value === "" || /^[a-zA-Z\s]*$/.test(value)) {
+//         setFormData(prev => ({ ...prev, [name]: value }));
+//       }
+//     }
+//     else {
+//       setFormData(prev => ({ ...prev, [name]: value }));
+//     }
+    
+//     if (editErrors[name]) {
+//       setEditErrors(prev => ({ ...prev, [name]: "" }));
+//     }
+//   };
+
+//   const handleSave = async (e) => {
+//     e.preventDefault();
+    
+//     if (!validateEditForm()) {
+//       alert("❌ Please fix the errors before saving!");
+//       return;
+//     }
+    
+//     try {
+//       const response = await fetch(`http://localhost:8001/api/patients/${selectedPatient.id}`, {
+//         method: 'PUT',
+//         headers: {
+//           'Content-Type': 'application/json',
+//         },
+//         body: JSON.stringify(formData)
+//       });
+
+//       const data = await response.json();
+
+//       if (data.success) {
+//         await fetchPatients();
+//         await fetchStats();
+//         setShowEditPopup(false);
+//         setEditErrors({});
+//         alert(`✅ Patient ${formData.patientName} updated successfully!`);
+//       } else {
+//         alert(`❌ Error: ${data.message}`);
+//       }
+//     } catch (error) {
+//       console.error('Error updating patient:', error);
+//       alert('Failed to update patient');
+//     }
+//   };
+
+//   const handleDelete = async (id) => {
+//     if (window.confirm("Are you sure you want to delete this patient?")) {
+//       try {
+//         const response = await fetch(`http://localhost:8001/api/patients/${id}`, {
+//           method: 'DELETE'
+//         });
+
+//         const data = await response.json();
+
+//         if (data.success) {
+//           await fetchPatients();
+//           await fetchStats();
+//           alert('✅ Patient deleted successfully!');
+//         } else {
+//           alert(`❌ Error: ${data.message}`);
+//         }
+//       } catch (error) {
+//         console.error('Error deleting patient:', error);
+//         alert('Failed to delete patient');
+//       }
+//     }
+//   };
+
+//   const handleAddPatient = (patientData) => {
+//     setPatients(prev => [...prev, patientData]);
+//     setShowRegistrationPopup(false);
+//     fetchStats(); // Refresh stats
+//   };
+
+//   const inputStyle = {
+//     padding: "10px",
+//     borderRadius: "6px",
+//     border: "1px solid #ddd",
+//     fontSize: "14px",
+//     width: "100%",
+//     boxSizing: "border-box"
+//   };
+
+//   const errorStyle = {
+//     border: "1px solid #dc3545",
+//     backgroundColor: "#fff8f8"
+//   };
+
+//   if (loading) {
+//     return (
+//       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+//         <div className="loading-spinner"></div>
+//         <p>Loading patients...</p>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <div className="patients-page">
+
+//       {/* HEADER */}
+//       <div className="page-header">
+//         <div>
+//           <h1>👥 Patient List</h1>
+//           <p style={{ marginLeft: "45px" }}>Total Patients: {stats.total || 0}</p>
+//         </div>
+//         <button className="add-btn" onClick={() => setShowRegistrationPopup(true)}>
+//           <span> + Register Patient</span>
+//         </button>
+//       </div>
+
+//       {/* SUMMARY STATS - WITH GENDER DISTRIBUTION */}
+//       <div className="summary-stats">
+//         <div className="summary-card" style={{ borderLeft: "4px solid #0d6efd" }}>
+//           <h4>👥 TOTAL PATIENTS</h4>
+//           <h2>{stats.total}</h2>
+//         </div>
+        
+//         <div className="summary-card" style={{ borderLeft: "4px solid #0d6efd" }}>
+//           <h4>👨 MALE</h4>
+//           <h2>{stats.male}</h2>
+//         </div>
+        
+//         <div className="summary-card" style={{ borderLeft: "4px solid #0d6efd" }}>
+//           <h4>👩 FEMALE</h4>
+//           <h2>{stats.female}</h2>
+//         </div>
+        
+//         <div className="summary-card" style={{ borderLeft: "4px solid #0d6efd" }}>
+//           <h4>🧑 OTHER</h4>
+//           <h2>{stats.other}</h2>
+//         </div>
+//       </div><br />
+
+//       {/* SEARCH */}
+//       <div className="search-container-fluid">
+//         <input
+//           type="text"
+//           placeholder="Search by any field - name, gender, blood group, symptoms, profession..."
+//           value={searchTerm}
+//           onChange={(e) => setSearchTerm(e.target.value)}
+//           className="search-input"
+//         />
+//       </div>
+
+//       {/* TABLE - First 6 Fields Only */}
+//       <div className="table-container">
+//         <table className="data-table">
+//           <thead>
+//             <tr>
+//               <th>ID</th>
+//               <th>Patient Name</th>
+//               <th>Age/Gender</th>
+//               <th>Phone</th>
+//               <th>Email</th>
+//               <th>Blood Group</th>
+//               <th>Actions</th>
+//             </tr>
+//           </thead>
+
+//           <tbody>
+//             {filteredPatients.length > 0 ? (
+//               filteredPatients.map((patient) => (
+//                 <tr key={patient.id}>
+//                   <td>#{String(patient.id).slice(-6)}</td>
+//                   <td>{patient.patientName}</td>
+//                   <td>
+//                     {patient.age || "-"} / {patient.gender || "-"}
+//                   </td>
+//                   <td>{patient.phone}</td>
+//                   <td>{patient.email}</td>
+//                   <td>{patient.bloodGroup || "-"}</td>
+
+//                   <td className="action-cell">
+//                     <button
+//                       className="view-btn"
+//                       onClick={() => handleView(patient)}
+//                       title="View Patient Details"
+//                     >
+//                       👁️
+//                     </button>
+
+//                     <button
+//                       className="edit-btn"
+//                       onClick={() => handleEdit(patient)}
+//                       title="Edit Patient"
+//                     >
+//                       ✏️
+//                     </button>
+
+//                     <button
+//                       className="delete-btn"
+//                       onClick={() => handleDelete(patient.id)}
+//                       title="Delete Patient"
+//                     >
+//                       ❌
+//                     </button>
+//                   </td>
+//                 </tr>
+//               ))
+//             ) : (
+//               <tr>
+//                 <td colSpan="7" style={{ textAlign: "center", padding: "30px", color: "#666" }}>
+//                   {searchTerm ? `No patients found matching "${searchTerm}"` : "No patients found"}
+//                 </td>
+//               </tr>
+//             )}
+//           </tbody>
+//         </table>
+//       </div>
+
+//       {/* VIEW POPUP - Keep as is from your original code */}
+//       {showViewPopup && selectedPatient && (
+//         // ... your existing view popup code (no changes needed)
+//         <div>View Popup Content</div>
+//       )}
+
+//       {/* EDIT POPUP - Keep as is from your original code */}
+//       {showEditPopup && selectedPatient && (
+//         // ... your existing edit popup code (no changes needed)
+//         <div>Edit Popup Content</div>
+//       )}
+
+//       {/* REGISTRATION POPUP */}
+//       {showRegistrationPopup && (
+//         <PatientRegistrationForm
+//           onClose={() => setShowRegistrationPopup(false)}
+//           addPatient={handleAddPatient}
+//           patients={patients}
+//         />
+//       )}
+//     </div>
+//   );
+// }
+
+// export default Patientlist;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Patientlist.css";
@@ -20,37 +477,42 @@ function Patientlist() {
   const [formData, setFormData] = useState({});
   const [editErrors, setEditErrors] = useState({});
   const [patients, setPatients] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Load patients from localStorage on component mount
-  useEffect(() => {
-    const savedPatients = localStorage.getItem('patients');
-    if (savedPatients) {
-      setPatients(JSON.parse(savedPatients));
+  // Fetch patients from backend
+  const fetchPatients = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('http://localhost:8001/api/patients');
+      const data = await response.json();
+      if (data.success) {
+        setPatients(data.data);
+        setStats(data.stats);
+      }
+    } catch (error) {
+      console.error('Error fetching patients:', error);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  // Fetch statistics
+  const fetchStats = async () => {
+    try {
+      const response = await fetch('http://localhost:8001/api/patients/stats');
+      const data = await response.json();
+      if (data.success) {
+        setStats(data.data);
+      }
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchPatients();
+    fetchStats();
   }, []);
-
-  // Save patients to localStorage whenever they change
-  useEffect(() => {
-    localStorage.setItem('patients', JSON.stringify(patients));
-  }, [patients]);
-
-  /* =======================
-     STATISTICS - WITH GENDER COUNTS
-  ========================*/
-  useEffect(() => {
-    if (!patients) return;
-
-    const maleCount = patients.filter(p => p.gender?.toLowerCase() === "male").length;
-    const femaleCount = patients.filter(p => p.gender?.toLowerCase() === "female").length;
-    const otherCount = patients.filter(p => p.gender?.toLowerCase() === "other").length;
-
-    setStats({
-      total: patients.length,
-      male: maleCount,
-      female: femaleCount,
-      other: otherCount
-    });
-  }, [patients]);
 
   /* =======================
      IMPROVED FILTER - SEARCH IN ALL FIELDS
@@ -63,19 +525,16 @@ function Patientlist() {
     const searchLower = searchTerm.toLowerCase().trim();
 
     return patients.filter((patient) => {
-      // Helper function to safely check if a field contains search term
       const matches = (field) => {
         if (field === undefined || field === null) return false;
         return String(field).toLowerCase().includes(searchLower);
       };
 
-      // Check symptoms array specially
       const symptomsMatch = patient.symptoms && 
         (Array.isArray(patient.symptoms) 
           ? patient.symptoms.some(symptom => symptom.toLowerCase().includes(searchLower))
           : String(patient.symptoms).toLowerCase().includes(searchLower));
 
-      // Check all fields for match
       return (
         matches(patient.patientName) ||
         matches(patient.age) ||
@@ -167,14 +626,12 @@ function Patientlist() {
   const handleEditChange = (e) => {
     const { name, value } = e.target;
     
-    // Phone number validation - only digits
     if (name === "phone" || name === "alternatePhone" || name === "kinContact") {
       const cleaned = value.replace(/\D/g, '');
       if (cleaned.length <= 10) {
         setFormData(prev => ({ ...prev, [name]: cleaned }));
       }
     } 
-    // Age validation - only positive numbers
     else if (name === "age") {
       if (value === "" || /^\d+$/.test(value)) {
         const ageNum = parseInt(value);
@@ -183,24 +640,21 @@ function Patientlist() {
         }
       }
     } 
-    // Name validation - only letters and spaces
     else if (name === "patientName") {
       if (value === "" || /^[a-zA-Z\s]*$/.test(value)) {
         setFormData(prev => ({ ...prev, [name]: value }));
       }
     }
-    // Other fields - no restriction
     else {
       setFormData(prev => ({ ...prev, [name]: value }));
     }
     
-    // Clear error for this field
     if (editErrors[name]) {
       setEditErrors(prev => ({ ...prev, [name]: "" }));
     }
   };
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
     
     if (!validateEditForm()) {
@@ -208,32 +662,59 @@ function Patientlist() {
       return;
     }
     
-    setPatients(prev => 
-      prev.map(p => p.id === selectedPatient.id ? { ...p, ...formData } : p)
-    );
-    
-    setShowEditPopup(false);
-    setEditErrors({});
-    alert(`✅ Patient ${formData.patientName} updated successfully!`);
+    try {
+      const response = await fetch(`http://localhost:8001/api/patients/${selectedPatient.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        await fetchPatients();
+        await fetchStats();
+        setShowEditPopup(false);
+        setEditErrors({});
+        alert(`✅ Patient ${formData.patientName} updated successfully!`);
+      } else {
+        alert(`❌ Error: ${data.message}`);
+      }
+    } catch (error) {
+      console.error('Error updating patient:', error);
+      alert('Failed to update patient');
+    }
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this patient?")) {
-      setPatients(prev => prev.filter(p => p.id !== id));
+      try {
+        const response = await fetch(`http://localhost:8001/api/patients/${id}`, {
+          method: 'DELETE'
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          await fetchPatients();
+          await fetchStats();
+          alert('✅ Patient deleted successfully!');
+        } else {
+          alert(`❌ Error: ${data.message}`);
+        }
+      } catch (error) {
+        console.error('Error deleting patient:', error);
+        alert('Failed to delete patient');
+      }
     }
   };
 
   const handleAddPatient = (patientData) => {
-    const newPatient = {
-      id: `PAT-${Date.now()}`,
-      ...patientData,
-      registeredDate: new Date().toISOString().split('T')[0],
-      registeredTime: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false }),
-      status: "Active"
-    };
-    
-    setPatients(prev => [...prev, newPatient]);
+    setPatients(prev => [...prev, patientData]);
     setShowRegistrationPopup(false);
+    fetchStats(); // Refresh stats
   };
 
   const inputStyle = {
@@ -249,6 +730,15 @@ function Patientlist() {
     border: "1px solid #dc3545",
     backgroundColor: "#fff8f8"
   };
+
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <div className="loading-spinner"></div>
+        <p>Loading patients...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="patients-page">
@@ -298,18 +788,18 @@ function Patientlist() {
         />
       </div>
 
-      {/* TABLE - First 6 Fields Only */}
+      {/* TABLE - First 6 Fields Only - WITH CENTER ALIGNMENT */}
       <div className="table-container">
         <table className="data-table">
           <thead>
             <tr>
-              <th>ID</th>
-              <th>Patient Name</th>
-              <th>Age/Gender</th>
-              <th>Phone</th>
-              <th>Email</th>
-              <th>Blood Group</th>
-              <th>Actions</th>
+              <th style={{ textAlign: 'center' }}>ID</th>
+              <th style={{ textAlign: 'center' }}>Patient Name</th>
+              <th style={{ textAlign: 'center' }}>Age/Gender</th>
+              <th style={{ textAlign: 'center' }}>Phone</th>
+              <th style={{ textAlign: 'center' }}>Email</th>
+              <th style={{ textAlign: 'center' }}>Blood Group</th>
+              <th style={{ textAlign: 'center' }}>Actions</th>
             </tr>
           </thead>
 
@@ -317,20 +807,32 @@ function Patientlist() {
             {filteredPatients.length > 0 ? (
               filteredPatients.map((patient) => (
                 <tr key={patient.id}>
-                  <td>#{String(patient.id).slice(-6)}</td>
-                  <td>{patient.patientName}</td>
-                  <td>
+                  <td style={{ textAlign: 'center' }}>#{String(patient.id).slice(-6)}</td>
+                  <td style={{ textAlign: 'center' }}>{patient.patientName}</td>
+                  <td style={{ textAlign: 'center' }}>
                     {patient.age || "-"} / {patient.gender || "-"}
                   </td>
-                  <td>{patient.phone}</td>
-                  <td>{patient.email}</td>
-                  <td>{patient.bloodGroup || "-"}</td>
+                  <td style={{ textAlign: 'center' }}>{patient.phone}</td>
+                  <td style={{ textAlign: 'center' }}>{patient.email}</td>
+                  <td style={{ textAlign: 'center' }}>{patient.bloodGroup || "-"}</td>
 
-                  <td className="action-cell">
+                  <td className="action-cell" style={{ textAlign: 'center' }}>
                     <button
                       className="view-btn"
                       onClick={() => handleView(patient)}
                       title="View Patient Details"
+                      style={{
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                        fontSize: "18px",
+                        padding: "5px",
+                        borderRadius: "4px",
+                        transition: "background 0.2s",
+                        margin: '0 3px'
+                      }}
+                      onMouseOver={(e) => e.target.style.background = "#e3f2fd"}
+                      onMouseOut={(e) => e.target.style.background = "none"}
                     >
                       👁️
                     </button>
@@ -339,6 +841,18 @@ function Patientlist() {
                       className="edit-btn"
                       onClick={() => handleEdit(patient)}
                       title="Edit Patient"
+                      style={{
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                        fontSize: "18px",
+                        padding: "5px",
+                        borderRadius: "4px",
+                        transition: "background 0.2s",
+                        margin: '0 3px'
+                      }}
+                      onMouseOver={(e) => e.target.style.background = "#e3f2fd"}
+                      onMouseOut={(e) => e.target.style.background = "none"}
                     >
                       ✏️
                     </button>
@@ -347,6 +861,18 @@ function Patientlist() {
                       className="delete-btn"
                       onClick={() => handleDelete(patient.id)}
                       title="Delete Patient"
+                      style={{
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                        fontSize: "18px",
+                        padding: "5px",
+                        borderRadius: "4px",
+                        transition: "background 0.2s",
+                        margin: '0 3px'
+                      }}
+                      onMouseOver={(e) => e.target.style.background = "#ffebee"}
+                      onMouseOut={(e) => e.target.style.background = "none"}
                     >
                       ❌
                     </button>
@@ -356,7 +882,7 @@ function Patientlist() {
             ) : (
               <tr>
                 <td colSpan="7" style={{ textAlign: "center", padding: "30px", color: "#666" }}>
-                  No patients found matching "{searchTerm}"
+                  {searchTerm ? `No patients found matching "${searchTerm}"` : "No patients found"}
                 </td>
               </tr>
             )}
@@ -364,7 +890,7 @@ function Patientlist() {
         </table>
       </div>
 
-      {/* VIEW POPUP - Show All Fields */}
+      {/* VIEW POPUP */}
       {showViewPopup && selectedPatient && (
         <div
           className="popup-overlay"
@@ -383,8 +909,8 @@ function Patientlist() {
             className="popup-content"
             onClick={(e) => e.stopPropagation()}
             style={{
-              width: "600px",
-              maxHeight: "80vh",
+              width: "700px",
+              maxHeight: "85vh",
               overflowY: "auto",
               background: "#fff",
               padding: "30px",
@@ -413,12 +939,12 @@ function Patientlist() {
               <div style={{ gridColumn: "span 2", background: "#f8f9fa", padding: "15px", borderRadius: "8px" }}>
                 <h3 style={{ margin: "0 0 15px 0", color: "#0d6efd", fontSize: "16px" }}>Personal Information</h3>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
-                  <div><strong>Patient ID:</strong> {selectedPatient.id}</div>
-                  <div><strong>Patient Name:</strong> {selectedPatient.patientName}</div>
-                  <div><strong>Age:</strong> {selectedPatient.age}</div>
-                  <div><strong>Gender:</strong> {selectedPatient.gender}</div>
-                  <div><strong>Date of Birth:</strong> {selectedPatient.dob}</div>
-                  <div><strong>Blood Group:</strong> {selectedPatient.bloodGroup}</div>
+                  <div><strong>Patient ID:</strong> #{selectedPatient.id}</div>
+                  <div><strong>Full Name:</strong> {selectedPatient.patientName}</div>
+                  <div><strong>Age:</strong> {selectedPatient.age || "-"}</div>
+                  <div><strong>Gender:</strong> {selectedPatient.gender || "-"}</div>
+                  <div><strong>Date of Birth:</strong> {selectedPatient.dob || "-"}</div>
+                  <div><strong>Blood Group:</strong> {selectedPatient.bloodGroup || "-"}</div>
                 </div>
               </div>
 
@@ -433,37 +959,53 @@ function Patientlist() {
                 </div>
               </div>
 
-              {/* Medical Information */}
-              <div style={{ gridColumn: "span 2", background: "#f8f9fa", padding: "15px", borderRadius: "8px" }}>
-                <h3 style={{ margin: "0 0 15px 0", color: "#0d6efd", fontSize: "16px" }}>Medical Information</h3>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
-                  <div><strong>Profession:</strong> {selectedPatient.profession || "-"}</div>
-                  <div><strong>Symptoms:</strong> {
-                    selectedPatient.symptoms 
-                      ? (Array.isArray(selectedPatient.symptoms) 
-                          ? selectedPatient.symptoms.join(", ") 
-                          : String(selectedPatient.symptoms))
-                      : "-"
-                  }</div>
-                </div>
-              </div>
-
               {/* Emergency Contact */}
               <div style={{ gridColumn: "span 2", background: "#f8f9fa", padding: "15px", borderRadius: "8px" }}>
                 <h3 style={{ margin: "0 0 15px 0", color: "#0d6efd", fontSize: "16px" }}>Emergency Contact</h3>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
-                  <div><strong>Contact Person:</strong> {selectedPatient.nameOfKin || "-"}</div>
-                  <div><strong>Contact Number:</strong> {selectedPatient.kinContact || "-"}</div>
+                  <div><strong>Name of Kin:</strong> {selectedPatient.nameOfKin || "-"}</div>
+                  <div><strong>Kin Contact:</strong> {selectedPatient.kinContact || "-"}</div>
                 </div>
               </div>
 
-              {/* Registration Info */}
+              {/* Medical Information */}
+              {(selectedPatient.symptoms || selectedPatient.profession) && (
+                <div style={{ gridColumn: "span 2", background: "#f8f9fa", padding: "15px", borderRadius: "8px" }}>
+                  <h3 style={{ margin: "0 0 15px 0", color: "#0d6efd", fontSize: "16px" }}>Medical Information</h3>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
+                    {selectedPatient.profession && (
+                      <div><strong>Profession:</strong> {selectedPatient.profession}</div>
+                    )}
+                    {selectedPatient.symptoms && (
+                      <div style={{ gridColumn: "span 2" }}>
+                        <strong>Symptoms:</strong> {
+                          Array.isArray(selectedPatient.symptoms) 
+                            ? selectedPatient.symptoms.join(", ") 
+                            : selectedPatient.symptoms
+                        }
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Registration Information */}
               <div style={{ gridColumn: "span 2", background: "#f8f9fa", padding: "15px", borderRadius: "8px" }}>
                 <h3 style={{ margin: "0 0 15px 0", color: "#0d6efd", fontSize: "16px" }}>Registration Information</h3>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
-                  <div><strong>Registered Date:</strong> {selectedPatient.registeredDate}</div>
-                  <div><strong>Registered Time:</strong> {selectedPatient.registeredTime}</div>
-                  <div><strong>Status:</strong> {selectedPatient.status || "Active"}</div>
+                  <div><strong>Registration Date:</strong> {selectedPatient.registeredDate || "-"}</div>
+                  <div><strong>Registration Time:</strong> {selectedPatient.registeredTime || "-"}</div>
+                  <div><strong>Status:</strong> 
+                    <span style={{
+                      marginLeft: "8px",
+                      padding: "3px 8px",
+                      borderRadius: "4px",
+                      backgroundColor: "#d4edda",
+                      color: "#155724"
+                    }}>
+                      {selectedPatient.status || "Active"}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -488,7 +1030,7 @@ function Patientlist() {
         </div>
       )}
 
-      {/* EDIT POPUP - Edit All Fields with Validation */}
+      {/* EDIT POPUP */}
       {showEditPopup && selectedPatient && (
         <div
           className="popup-overlay"
@@ -507,8 +1049,8 @@ function Patientlist() {
             className="popup-content"
             onClick={(e) => e.stopPropagation()}
             style={{
-              width: "600px",
-              maxHeight: "80vh",
+              width: "700px",
+              maxHeight: "85vh",
               overflowY: "auto",
               background: "#fff",
               padding: "30px",
@@ -538,7 +1080,7 @@ function Patientlist() {
                 <div style={{ background: "#f8f9fa", padding: "15px", borderRadius: "8px" }}>
                   <h3 style={{ margin: "0 0 15px 0", color: "#0d6efd", fontSize: "16px" }}>Personal Information</h3>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
-                    <div>
+                    <div style={{ gridColumn: "span 2" }}>
                       <input
                         name="patientName"
                         placeholder="Patient Name *"
@@ -571,22 +1113,32 @@ function Patientlist() {
                         style={{...inputStyle, ...(editErrors.gender ? errorStyle : {})}}
                         required
                       >
-                        <option value="">Select Gender</option>
+                        <option value="">Gender *</option>
                         <option value="Male">Male</option>
                         <option value="Female">Female</option>
                         <option value="Other">Other</option>
                       </select>
                       {editErrors.gender && <span style={{color: "#dc3545", fontSize: "12px", marginTop: "3px", display: "block"}}>{editErrors.gender}</span>}
                     </div>
-                    <input
-                      name="dob"
-                      type="date"
-                      placeholder="Date of Birth *"
-                      value={formData.dob || ""}
-                      onChange={handleEditChange}
-                      style={inputStyle}
-                      required
-                    />
+                    <div>
+                      <input
+                        name="dob"
+                        type="date"
+                        placeholder="Date of Birth"
+                        value={formData.dob || ""}
+                        onChange={handleEditChange}
+                        style={inputStyle}
+                      />
+                    </div>
+                    <div>
+                      <input
+                        name="bloodGroup"
+                        placeholder="Blood Group"
+                        value={formData.bloodGroup || ""}
+                        onChange={handleEditChange}
+                        style={inputStyle}
+                      />
+                    </div>
                   </div>
                 </div>
 
@@ -594,7 +1146,7 @@ function Patientlist() {
                 <div style={{ background: "#f8f9fa", padding: "15px", borderRadius: "8px" }}>
                   <h3 style={{ margin: "0 0 15px 0", color: "#0d6efd", fontSize: "16px" }}>Contact Information</h3>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
-                    <div>
+                    <div style={{ gridColumn: "span 2" }}>
                       <input
                         name="phone"
                         placeholder="Phone *"
@@ -606,7 +1158,7 @@ function Patientlist() {
                       />
                       {editErrors.phone && <span style={{color: "#dc3545", fontSize: "12px", marginTop: "3px", display: "block"}}>{editErrors.phone}</span>}
                     </div>
-                    <div>
+                    <div style={{ gridColumn: "span 2" }}>
                       <input
                         name="alternatePhone"
                         placeholder="Alternate Phone"
@@ -617,7 +1169,7 @@ function Patientlist() {
                       />
                       {editErrors.alternatePhone && <span style={{color: "#dc3545", fontSize: "12px", marginTop: "3px", display: "block"}}>{editErrors.alternatePhone}</span>}
                     </div>
-                    <div>
+                    <div style={{ gridColumn: "span 2" }}>
                       <input
                         name="email"
                         type="email"
@@ -629,43 +1181,16 @@ function Patientlist() {
                       />
                       {editErrors.email && <span style={{color: "#dc3545", fontSize: "12px", marginTop: "3px", display: "block"}}>{editErrors.email}</span>}
                     </div>
-                    <input
-                      name="address"
-                      placeholder="Address"
-                      value={formData.address || ""}
-                      onChange={handleEditChange}
-                      style={inputStyle}
-                    />
-                  </div>
-                </div>
-
-                {/* Medical Information */}
-                <div style={{ background: "#f8f9fa", padding: "15px", borderRadius: "8px" }}>
-                  <h3 style={{ margin: "0 0 15px 0", color: "#0d6efd", fontSize: "16px" }}>Medical Information</h3>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
-                    <select
-                      name="bloodGroup"
-                      value={formData.bloodGroup || ""}
-                      onChange={handleEditChange}
-                      style={inputStyle}
-                    >
-                      <option value="">Select Blood Group</option>
-                      <option value="A+">A+</option>
-                      <option value="A-">A-</option>
-                      <option value="B+">B+</option>
-                      <option value="B-">B-</option>
-                      <option value="O+">O+</option>
-                      <option value="O-">O-</option>
-                      <option value="AB+">AB+</option>
-                      <option value="AB-">AB-</option>
-                    </select>
-                    <input
-                      name="profession"
-                      placeholder="Profession"
-                      value={formData.profession || ""}
-                      onChange={handleEditChange}
-                      style={inputStyle}
-                    />
+                    <div style={{ gridColumn: "span 2" }}>
+                      <textarea
+                        name="address"
+                        placeholder="Address"
+                        value={formData.address || ""}
+                        onChange={handleEditChange}
+                        rows="2"
+                        style={{...inputStyle, resize: "vertical"}}
+                      />
+                    </div>
                   </div>
                 </div>
 
@@ -673,23 +1198,50 @@ function Patientlist() {
                 <div style={{ background: "#f8f9fa", padding: "15px", borderRadius: "8px" }}>
                   <h3 style={{ margin: "0 0 15px 0", color: "#0d6efd", fontSize: "16px" }}>Emergency Contact</h3>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
-                    <input
-                      name="nameOfKin"
-                      placeholder="Contact Person Name"
-                      value={formData.nameOfKin || ""}
-                      onChange={handleEditChange}
-                      style={inputStyle}
-                    />
+                    <div>
+                      <input
+                        name="nameOfKin"
+                        placeholder="Name of Kin"
+                        value={formData.nameOfKin || ""}
+                        onChange={handleEditChange}
+                        style={inputStyle}
+                      />
+                    </div>
                     <div>
                       <input
                         name="kinContact"
-                        placeholder="Contact Number"
+                        placeholder="Kin Contact"
                         value={formData.kinContact || ""}
                         onChange={handleEditChange}
                         maxLength="10"
                         style={{...inputStyle, ...(editErrors.kinContact ? errorStyle : {})}}
                       />
                       {editErrors.kinContact && <span style={{color: "#dc3545", fontSize: "12px", marginTop: "3px", display: "block"}}>{editErrors.kinContact}</span>}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Medical Information */}
+                <div style={{ background: "#f8f9fa", padding: "15px", borderRadius: "8px" }}>
+                  <h3 style={{ margin: "0 0 15px 0", color: "#0d6efd", fontSize: "16px" }}>Medical Information</h3>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+                    <div>
+                      <input
+                        name="profession"
+                        placeholder="Profession"
+                        value={formData.profession || ""}
+                        onChange={handleEditChange}
+                        style={inputStyle}
+                      />
+                    </div>
+                    <div>
+                      <input
+                        name="symptoms"
+                        placeholder="Symptoms (comma separated)"
+                        value={Array.isArray(formData.symptoms) ? formData.symptoms.join(", ") : formData.symptoms || ""}
+                        onChange={(e) => setFormData({...formData, symptoms: e.target.value})}
+                        style={inputStyle}
+                      />
                     </div>
                   </div>
                 </div>
