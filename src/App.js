@@ -68,7 +68,7 @@ function App() {
         </Route>
 
         {/* 404 REDIRECT */}
-        <Route path="*" element={<Navigate to="/" />} />
+        <Route path="*" element={<Navigate to="/receptionist-dashboard" />} />
       </Routes>
     </AnimatePresence>
   );

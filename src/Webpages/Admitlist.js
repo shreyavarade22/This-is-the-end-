@@ -934,6 +934,9 @@
 // }
 
 // export default AdmitList;
+
+
+
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Admitlist.css";
@@ -1060,7 +1063,7 @@ function AdmitList() {
                     matches(admission.bedNo) ||
                     matches(admission.fromDate) ||
                     matches(admission.toDate) ||
-                    matches(admission.admittingDoctor) ||
+                    // matches(admission.admittingDoctor) ||
                     matches(admission.nameOfKin) ||
                     matches(admission.kinContact) ||
                     matches(admission.status) ||
@@ -1310,7 +1313,7 @@ function AdmitList() {
                 >
                     <h4>📊 TOTAL PATIENTS</h4>
                     <h2>{stats.total}</h2>
-                    <small>Click to view all</small>
+                    <small></small>
                 </div>
                 <div 
                     className={`summary-card ${filterType === 'admitted' ? 'active-card' : ''}`} 
@@ -1327,7 +1330,7 @@ function AdmitList() {
                 >
                     <h4>🟢 ADMITTED</h4>
                     <h2>{stats.admitted}</h2>
-                    <small>Click to view admitted</small>
+                    <small></small>
                 </div>
                 <div 
                     className={`summary-card ${filterType === 'discharged' ? 'active-card' : ''}`} 
@@ -1344,12 +1347,12 @@ function AdmitList() {
                 >
                     <h4>🔴 DISCHARGED</h4>
                     <h2>{stats.discharged}</h2>
-                    <small>Click to view discharged</small>
+                    <small></small>
                 </div>
             </div><br />
 
             {/* FILTER INDICATOR AND CLEAR BUTTON */}
-            {filterType !== 'all' && (
+            {/* {filterType !== 'all' && (
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
                     <div style={{ 
                         background: '#e3f2fd', 
@@ -1378,7 +1381,7 @@ function AdmitList() {
                         Found {filteredAdmissions.length} {filterType === 'admitted' ? 'admitted' : filterType === 'discharged' ? 'discharged' : ''} patients
                     </div>
                 </div>
-            )}
+            )} */}
 
             {/* SEARCH */}
             <div className="search-container-fluid">
@@ -1592,7 +1595,7 @@ function AdmitList() {
                                             {selectedAdmission.status}
                                         </span>
                                     </div>
-                                    <div><strong>Admitting Doctor:</strong> {selectedAdmission.admittingDoctor || "-"}</div>
+                                    {/* <div><strong>Admitting Doctor:</strong> {selectedAdmission.admittingDoctor || "-"}</div> */}
                                 </div>
                             </div>
 
@@ -1760,13 +1763,13 @@ function AdmitList() {
                                             />
                                         </div>
                                         <div>
-                                            <input
+                                            {/* <input
                                                 name="admittingDoctor"
                                                 placeholder="Admitting Doctor"
                                                 value={editFormData.admittingDoctor || ""}
                                                 onChange={handleEditChange}
                                                 style={inputStyle}
-                                            />
+                                            /> */}
                                         </div>
                                         <div>
                                             <input
